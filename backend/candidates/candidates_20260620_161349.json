@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-06-20T16:13:49.441017+00:00",
+  "since_hours": 24,
+  "sources_attempted": 3,
+  "candidates_count": 3,
+  "candidates": [
+    {
+      "candidate_id": "cand_2e5f03b182",
+      "source_name": "机器之心",
+      "source_url": "https://www.jiqizhixin.com/rss",
+      "source_tier": "core",
+      "source_lang": "zh",
+      "url": "https://www.anthropic.com/news/claude-4-6",
+      "title": "Anthropic 发布 Claude 4.6，编程 benchmark 突破 80%",
+      "summary": "Anthropic 6 月 22 日发布 Claude 4.6，SWE-bench 得分突破 80%，比 4.5 提升 2.5 个百分点。200K context，价格不变。重点强化 agent 长任务链能力。",
+      "published": "2026-06-20T13:13:49.439889+00:00",
+      "suggested_domain": "llm",
+      "suggested_category": "model_capability"
+    },
+    {
+      "candidate_id": "cand_7a78090769",
+      "source_name": "机器之心",
+      "source_url": "https://www.jiqizhixin.com/rss",
+      "source_tier": "core",
+      "source_lang": "zh",
+      "url": "https://www.theinformation.com/articles/openai-raises-funding",
+      "title": "OpenAI 完成新一轮融资，估值 3500 亿美元",
+      "summary": "OpenAI 完成 100 亿美元融资，估值升至 3500 亿美元。本轮由 Thrive Capital 领投，软银、微软跟投。资金用于推理算力扩张。",
+      "published": "2026-06-20T08:13:49.440060+00:00",
+      "suggested_domain": "infra",
+      "suggested_category": "funding"
+    },
+    {
+      "candidate_id": "cand_637724db35",
+      "source_name": "机器之心",
+      "source_url": "https://www.jiqizhixin.com/rss",
+      "source_tier": "core",
+      "source_lang": "zh",
+      "url": "https://api-docs.deepseek.com/news/v4",
+      "title": "DeepSeek V4 发布，国产模型编程能力首次超越 Claude 4.5",
+      "summary": "DeepSeek V4 6 月 20 日发布，编程 benchmark 与 Claude 4.5 持平，价格只有 1/10。开源（MIT 协议），支持 128K context。",
+      "published": "2026-06-20T02:13:49.440065+00:00",
+      "suggested_domain": "llm",
+      "suggested_category": "model_release"
+    }
+  ]
+}
