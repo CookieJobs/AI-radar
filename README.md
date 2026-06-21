@@ -1,210 +1,276 @@
 # Radar
 
-> **B2A（Business to Agent）模式的 AI 行业情报 API。**
-> agent 调一次，拿到事件 + 解读 + 推演。**只做 API，不做人读版。**
+> **给 agent 用的「AI 产品经理调研方法论 Skill」。**
+> 用户 agent 装上 Radar，按方法论做 AI 行业调研，按调用付费（支付宝 A2M 协议）。
+> **调研执行 = 用户 agent + 用户的 LLM；Radar 只提供方法论 + 模板。**
 
 [![MCP](https://img.shields.io/badge/MCP-compatible-blue)]()
-[![Status](https://img.shields.io/badge/status-cold_start-yellow)]()
+[![Status](https://img.shields.io/badge/status-stage_0_demo-yellow)]()
+[![Python](https://img.shields.io/badge/python-3.9%2B-blue)]()
 [![License](https://img.shields.io/badge/license-TBD-lightgrey)]()
 
 ---
 
-## 🤖 For AI Agents — 接手必读
+## 一句话定义
 
-**如果你是另一个 AI agent 接手这个项目，按这个顺序读：**
+**Radar 是 B2A（Business to Agent）模式的"调研方法论 Skill"。**
 
-1. **[CLAUDE.md](./CLAUDE.md)** ← 项目根手册（最先读，5 分钟拿到全局上下文）
-2. **[docs/00-context.md](./docs/00-context.md)** ← 6 轮讨论的浓缩版，决策来源
-3. **[docs/product-brief.md](./docs/product-brief.md)** ← 产品方案 v0.2 全文
-4. **[docs/launch-roadmap.md](./docs/launch-roadmap.md)** ← 90 天冷启动路线图
-5. **[docs/mcp-integration-guide.md](./docs/mcp-integration-guide.md)** ← 如果你要做 MCP 集成
-6. **[backend/README.md](./backend/README.md)** ← 如果你要动代码
+用户 agent 调 Radar 拿「AI 产品经理调研问卷设计规则」+「AI PM 5 维度评估框架」+「报告输出模板」。用户 agent 拿到这些规则后，调自己的 LLM 跑调研、生成报告。
 
-**不变量**（不许改的核心决策）：
-- ✅ 卖**判断**不卖信息（L3 解读 + L4 推演，不是 L1 数据搬运）
-- ✅ 一次生产，**只走 API**（不做周报 / 订阅 / 人读版）
-- ✅ 化名 = **Radar**（不暴露公司名）
-- ✅ 冷启动期**完全免费**，等微信/支付宝 agent 钱包上线再按调用 ¥0.1-0.5/次
-- ✅ **人写判断**（insight / forecast），AI 只做事实摘要 + 格式转换
-
-**商业道德红线**（绝对不能踩）：
-- ❌ 前公司未公开的用户数据、教学内容、产品数据
-- ❌ 客户名单、未公开产品规划、未公开财务
-- ❌ 任何违反 NDA / 保密协议的素材
-- ✅ 只用：公开信源 + 个人方法论 + 自购素材二次加工
+**类比**：调研界的"律师咨询清单 + 分诊问卷 + 麦肯锡 Discovery 模板"。
 
 ---
 
-## 📦 这是什么
+## 这是什么 / 不是什么
 
-**Radar** 是个 AI 行业情报 API。agent 可以通过 REST 或 MCP 协议调用它，拿到结构化的"事件 + 事实 + 解读 + 推演"。
+### Radar 是什么 ✅
 
-**两条 SKU**：
-1. **实时事件 API** (`GET /v1/events`) — 查询事件流（按 domain / category / impact / 时间窗口过滤）
-2. **深度问答 API** (`POST /v1/ask`) — v0.2 是 stub，v0.3 接 RAG
+- 给 agent 用的方法论 Skill（MCP server，stdio 协议）
+- 提供「AI 产品经理调研问卷设计规则」
+- 提供「AI PM 5 维度评估法」（影响 / 趋势 / 行动 / 30 天预测 / 风险）
+- 提供「调研报告 Markdown 输出模板」
+- 浅调研 ¥0.49/次 / 深调研 ¥0.98/次（按调用付费）
+- 走支付宝 A2M 协议（HTTP 402，2026-04 蚂蚁官方 SDK 已发布）
 
-**两条分发通道**：
-1. **REST API** — 传统 HTTP，IP 限速 60/min + 1000/day
-2. **MCP server** — 给 Claude Desktop / Cursor / Cline / Windsurf 等 agent host 直接调用
+### Radar 不是什么 ❌
 
-**当前状态**：MVP 已跑通（49 条种子事件 + REST + MCP），进入冷启动期。
+- ❌ 不是数据 API（不卖事件、不卖数据）
+- ❌ 不替用户执行调研（用户 agent + 用户 LLM 才是执行者）
+- ❌ 不调 LLM（不替你跑 AI）
+- ❌ 不存数据（不存用户调研记录）
+- ❌ 不是周报 / 订阅 / newsletter
+- ❌ 不做"AI 替你查资料"——这是上一代产品思维
 
 ---
 
-## 🚀 快速开始
+## 核心价值：为什么卖"方法论"卖得动
 
-### 跑 REST API（后台服务）
+**用户没装的痛点**：调研质量 = 边界清晰度 × 维度完整度 × 意图理解度
+
+没用 Radar：
+- 用户问"帮我调研下 Anthropic" → agent 瞎搜一通 → 输出 200 字散乱内容
+- 用户不知道调研边界在哪 → 报告泛泛而谈
+- 用户不知道调研格式 → 报告没有结构
+
+用了 Radar：
+- agent 先问 5-7 个结构化问题（按 Radar 规则生成）
+- 用户答完，agent 拿到 AI PM 5 维度评估框架
+- agent 按框架跑调研、输出结构化报告
+- **每一步都有方法论支撑，不靠 agent 心情**
+
+**类比**：
+- 没用 Radar = 让 agent"随便写篇文章"
+- 用了 Radar = 让 agent 按《金字塔原理》写商业分析
+
+---
+
+## 3 步工作流（一次调研）
+
+```
+Step 1: 用户问 "调研 X"
+        agent 调 Radar skill（不传 payment_proof）
+        ↓
+        Radar 返回 A402 账单（浅 ¥0.49 / 深 ¥0.98）
+        ↓
+Step 2: 用户在支付宝付款
+        agent 重新调 skill（payment_proof='PAID'，不传 answers）
+        ↓
+        Radar 返回「调研问卷设计规则 + 建议问卷骨架」
+        ↓
+        agent 调自己的 LLM 生成具体问卷，问用户，收答案
+        ↓
+Step 3: agent 再次调 skill（payment_proof + answers）
+        ↓
+        Radar 返回「AI PM 调研框架 + 报告模板」
+        ↓
+        agent 调自己的 LLM 按框架执行调研，输出报告
+        ↓
+        agent 把报告给用户
+        ↓
+用户自己存到 Notion / Obsidian / 飞书
+```
+
+---
+
+## 快速开始（装到 Claude Code）
+
+### 前提
+
+- Claude Code 已装（`claude` 命令可用）
+- Python 3.9+（手写 stdio JSON-RPC，不依赖 mcp Python 包）
+- macOS / Linux（未在 Windows 测试）
+
+### 1. clone + 准备 venv
 
 ```bash
-cd backend
+git clone https://github.com/CookieJobs/AI-radar.git
+cd AI-radar/backend
 python3 -m venv venv
-venv/bin/pip install -r requirements.txt
-venv/bin/python main.py
-# → http://127.0.0.1:8765
-# → Swagger UI: http://127.0.0.1:8765/docs
+venv/bin/pip install --upgrade pip
+# v0.2 demo 不依赖第三方包（手写 stdio JSON-RPC），但 venv 准备好备用
 ```
 
-### 跑 MCP server（让 agent 直接调）
+### 2. 配置 Claude Code MCP server
 
-```bash
-cd backend
-venv/bin/python mcp_server.py
-# 然后在你的 MCP host 里配（详见 docs/mcp-integration-guide.md）
+编辑 `~/.claude.json`：
+
+```json
+{
+  "mcpServers": {
+    "radar": {
+      "command": "/absolute/path/to/AI-radar/backend/venv/bin/python",
+      "args": ["/absolute/path/to/AI-radar/backend/skills/research_skill_v0.1.py"],
+      "env": {},
+      "type": "stdio"
+    }
+  }
+}
 ```
 
-### 验证一切正常
+### 3. 验证
 
-```bash
-cd backend
-venv/bin/python examples/demo_agent.py   # REST demo
-venv/bin/python examples/test_mcp.py     # MCP 协议层验证
+重启 Claude Code 会话后：
+
+```
+你：列出你现在可用的 mcp tools
+Claude Code：会列出 mcp__radar__research_quick 和 mcp__radar__research_deep
+```
+
+### 4. 跑一次调研
+
+```
+你：帮我调研 Anthropic Claude 4.6，用浅调研
+Claude Code：[调 Radar skill] → [收到 ¥0.49 账单] → [等你付钱]
+你：已支付
+Claude Code：[生成调研问卷] → [等你答] → [按框架跑调研] → [输出报告]
 ```
 
 ---
 
-## 📁 项目结构
+## 快速开始（手动测试 demo）
+
+不装 Claude Code，也能直接看 Radar 的 3 步流程：
+
+```bash
+cd AI-radar/backend
+venv/bin/python skills/tests/test_demo.py
+```
+
+会输出：
+- MCP 协议初始化
+- 2 个 tool 列表
+- 浅调研「调研 Anthropic」完整 3 步
+- 深调研「调研 MCP 生态」完整 3 步
+- 错误场景
+
+---
+
+## 目录结构
 
 ```
-ai-radar/
-├── README.md                       ← 你正在读（GitHub 入口）
-├── CLAUDE.md                       ← 项目根手册（AI 接手必读）
-├── LICENSE                         ← 待定
-├── .gitignore
-├── docs/
-│   ├── 00-context.md               ← 6 轮讨论浓缩版
-│   ├── product-brief.md            ← 产品方案 v0.2
-│   ├── launch-roadmap.md           ← 90 天路线图
-│   ├── b2a-value-logic.md          ← B2A 价值逻辑（v0.1 待重写）
-│   └── mcp-integration-guide.md    ← MCP 集成教程
-├── data/
-│   └── source-list-v0.1.md         ← 40 个信源清单（30 EN + 10 CN）
-├── api/
-│   └── schema-v0.1.md              ← API 字段设计（待重写）
+AI-radar/
+├── README.md                                ← 你正在读
+├── CLAUDE.md                                ← 项目根手册（AI 接手必读）
 ├── backend/
-│   ├── main.py                     ← FastAPI 入口 + 限速中间件
-│   ├── mcp_server.py               ← MCP server（stdio）
-│   ├── models.py                   ← Pydantic 数据模型
-│   ├── seed.py                     ← 49 条种子事件（2026-06 上半月真实事件）
-│   ├── examples/
-│   │   ├── demo_agent.py           ← REST demo agent
-│   │   └── test_mcp.py             ← MCP 协议层验证脚本
-│   ├── README.md                   ← 后端启动说明
-│   └── requirements.txt
-└── archive/                        ← 已废弃版本
+│   ├── skills/                              ← v0.2 阶段 0：调研 Skill（核心）
+│   │   ├── research_skill_v0.1.py             ← MCP server（手写 stdio JSON-RPC）
+│   │   ├── content/                            ← 静态方法论资产
+│   │   │   ├── questionnaire_rules.md           ← 调研问卷设计规则
+│   │   │   ├── framework_quick.md               ← 浅调研框架 + AI PM 5 维度
+│   │   │   └── framework_deep.md                ← 深调研框架 + 4 增强维度
+│   │   └── tests/test_demo.py                  ← 3 步流程模拟测试
+│   ├── main.py                              ← v0.1 阶段 2 素材（暂不删）
+│   ├── mcp_server.py                        ← v0.1 旧版（暂不删）
+│   ├── seed.py / models.py                  ← v0.1 阶段 2 素材
+│   ├── ingest/                              ← v0.1 RSS fetcher（暂不删）
+│   └── venv/                                ← Python 3.9+ 虚拟环境
+├── docs/
+│   ├── product-brief.md                     ← 待重写为 v0.3
+│   ├── launch-roadmap.md                    ← 待重写
+│   └── ...
+└── archive/                                 ← v0.1 数据 API 旧版归档（未来）
 ```
 
 ---
 
-## 🛠️ 技术栈
+## 当前状态（2026-06-21）
 
-| 层 | 选择 | 理由 |
-|---|---|---|
-| 后端框架 | FastAPI | 轻、文档自动生成、异步友好 |
-| 数据 | SQLite（未来）+ in-memory（当前） | MVP 不引入依赖 |
-| 协议 | REST + MCP（双通道） | REST 给传统调用，MCP 给 agent |
-| LLM 框架 | 不依赖 | Radar 本身是数据源，不用 LLM |
-| 部署 | 本地 `uvicorn`（未来 Cloudflare/Vercel） | 冷启动期不上云 |
-| Python | 3.11+ | pydantic v2 + mcp 包 |
+- ✅ **阶段 0 demo 跑通**：`test_demo.py` 验证 3 步流程
+- ✅ **Claude Code 集成验证通过**：实测在 Claude Code 里走完 3 步，输出真实调研报告
+- ✅ **核心方法论 IP 完成**：问卷设计规则 + 5 维度评估法 + 4 增强维度
+- ⏳ **支付宝 A2M 真商户资质**：需要申请，等支付宝开放
+- ⏳ **docs/ 文档重写**：v0.3 product-brief + roadmap
+- ⏳ **2 个 tool 的 description 优化**：让 Claude Code 更倾向主动调 Radar
 
 ---
 
-## 📊 当前进度（截至 2026-06-18）
+## 关键判断（核心决策）
 
-✅ 已完成：
-- 项目立项 + 商业模式决策（纯 B2A）
-- 产品方案 v0.2（砍订阅/砍周报）
-- 49 条种子事件入库
-- REST API 4 个端点全部跑通
-- MCP server 3 个工具，协议层验证通过
-- MCP 集成教程文档
-- 90 天路线图
+### 1. 卖方法论，不卖数据
 
-⏳ 待办（roadmap 阶段 0）：
-- [ ] 域名注册（radar.dev / getradar.io / radarai.cn）
-- [ ] **RSS 抓取脚本 v0.1**（40 信源，每天入 1-2 条）
-- [ ] Claude Desktop 本机接入验证
-- [ ] 找 3 个 agent 主人内测
-- [ ] SQLite 持久化
-- [ ] `/v1/ask` 接 RAG
-- [ ] `docs/b2a-value-logic.md` 同步 v0.2
-- [ ] `api/schema-v0.1.md` 重写
+- L1 数据（事实）：agent 自己能搜，不值钱
+- L2 标签（分类）：agent 自己能做，值小钱
+- **L3 解读方法论**：值钱 — Radar 卖这个
+- **L4 推演框架**：值钱 — Radar 也卖这个
+- **核心 IP**：「AI PM 5 维度评估法」+「调研问卷三段式」
 
-详细见 [docs/launch-roadmap.md](./docs/launch-roadmap.md)。
+### 2. 一次付费，3 步交付
 
----
+- 不是"调一次 API 返回数据"
+- 是"付一次费，走完 1 个完整调研"
+- 用户填问卷是必走流程——这是**价值核心**
 
-## 💡 核心产品逻辑
+### 3. 化名出镜，不藏职业背景
 
-**为什么 Radar 卖得动？**
+- 品牌名 Radar，不暴露公司
+- About 只写"AI 产品经理"
 
-1. **窗口期**：2026 H2 - 2027 H1 是"agent 数据源"赛道的窗口期，微信/支付宝 agent 钱包即将上线
-2. **真实痛点**：OPC 创业者 / AI PM / 早期投资人的 agent 需要持续喂行业信息，自己刷 50 个信源太累
-3. **不可替代**：判断 + 推演 = 大模型自己做不到的，必须人写
-4. **规模效应**：事件库越大，调用频率越高，单位成本越低
-5. **护城河**：品牌 + 个人 IP + 数据沉淀 + agent 生态卡位
+### 4. 商业道德红线
 
-**为什么不订阅 / 不做周报？**
-
-- 周报是个人 IP 时代的产物，获客路径长
-- 订阅对个人作者是负担（每周维护）
-- 纯 B2A 直接对接 agent 钱包上线后的"按调用付费"基础设施
-- 卖的是"情报给 agent 调"，不是"内容给读者"
+- ❌ 高途未公开的用户数据、教学内容、产品数据
+- ❌ 客户名单、未公开产品规划、未公开财务
+- ❌ 公司内部培训资料、NDA 覆盖的素材
+- ✅ 公开信源 + 个人方法论 + 自购素材二次加工
 
 ---
 
-## 🤝 贡献 / 接入
+## 路线图
 
-### 我想接入 Radar（agent 主人）
+### 阶段 0（当前）：调研 Skill demo
 
-详见 [docs/mcp-integration-guide.md](./docs/mcp-integration-guide.md)
+- ✅ 2 个 tool（research_quick / research_deep）
+- ✅ 3 步付费流程
+- ✅ AI PM 5 维度评估法
+- ✅ Claude Code 集成验证
 
-### 我想贡献事件数据 / 信源
+### 阶段 1：真实付费链路
 
-PR 到 `data/source-list-v0.1.md`，附：
-- 信源 URL
-- 更新频率
-- 一句话定位
-- 评分（时效性 / 准确性 / 深度 / 独家 / 对 Radar 的价值，各 1-5 分）
+- 申请支付宝 A2M 商户资质
+- 接入真实支付宝 SDK 验证 payment_proof
+- 上线到 ClawHub / MCP 广场
 
-### 我想动代码
+### 阶段 2：私有数据
 
-1. Fork → 建 feature branch
-2. 改 backend/ → 跑 examples/test_mcp.py 验证 MCP 不破
-3. PR 描述里说明改了什么 + 为什么
+- 我自己准备 AI 行业高质量数据
+- 数据 API **只通过 Radar Skill 调用**（不直接开放）
+- 进阶版：用户 profile 复用（同类调研免填问卷）
+
+### 阶段 3：规模化
+
+- 接入更多 agent host（Cursor / Cline / Windsurf / Claude Desktop）
+- 多领域专有问卷库（调研 AI 公司 / 调研消费品 / 调研技术 / 调研政策）
 
 ---
 
-## 📝 License
+## 反馈 / 接入
 
-TBD（待定）
+- **项目主页**：https://github.com/CookieJobs/AI-radar
+- **作者**：Radar（化名）—— AI 产品经理
+- **问题反馈**：GitHub Issues
+- **想贡献问卷模板**：PR 到 `backend/skills/content/`
 
 ---
 
-## 🏷️ 项目元信息
+## License
 
-- **创建日期**：2026-06-18
-- **品牌**：Radar
-- **作者身份**：AI 产品经理（化名出镜，不暴露公司名）
-- **工作目录**：`~/Documents/hermesWorkspace/ai-radar/`
-- **GitHub**：https://github.com/CookieJobs/AI-radar.git
-- **工具栈**：Hermes / Claude Code / Cursor 跨工具协作
+TBD
